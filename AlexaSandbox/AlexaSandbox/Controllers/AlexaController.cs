@@ -25,6 +25,7 @@ namespace AlexaSandbox.Controllers
         [HttpPost]
         public SkillResponse HandleResponse([FromBody] SkillRequest input)
         {
+            //test change to trigger PR2.
             var requestType = input.GetRequestType();
 
             // return a welcome message
