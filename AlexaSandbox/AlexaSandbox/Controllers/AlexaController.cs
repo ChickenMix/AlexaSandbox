@@ -3,6 +3,7 @@ using Alexa.NET.Request;
 using Alexa.NET.Request.Type;
 using Alexa.NET.Response;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Octokit;
 using Octokit.Internal;
 using System.Linq;
@@ -12,10 +13,12 @@ namespace AlexaSandbox.Controllers
     [Route("api/[controller]")]
     public class AlexaController : Controller
     {
-        public const string owner = "ChickenMix";
-        public const string repo = "AlexaSandbox";
-        public const string product_name = "AlexaGitHubDemo";
-        public const string token = "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";
+        private IOptions<AppSettings> AppSettings { get; set; }
+
+        public AlexaController(IOptions<AppSettings> appSettings)
+        {
+            AppSettings = appSettings;
+        }
 
         /// <summary>
         /// This is the entry point for the Alexa skill.
@@ -59,9 +62,10 @@ namespace AlexaSandbox.Controllers
         [HttpGet]
         public int CountPullRequests()
         {
-            var creds = new InMemoryCredentialStore(new Credentials(token));
-            var client = new GitHubClient(new ProductHeaderValue(product_name), creds);
-            var pullrequests = client.PullRequest.GetAllForRepository(owner, repo).Result;
+            var creds = new InMemoryCredentialStore(new Credentials(AppSettings.Value.GitHubSettings.Token));
+            var client = new GitHubClient(new ProductHeaderValue(AppSettings.Value.GitHubSettings.ProductName), creds);
+            var pullrequests = client.PullRequest.GetAllForRepository(
+                AppSettings.Value.GitHubSettings.Owner, AppSettings.Value.GitHubSettings.Repo).Result;
             return pullrequests.Count();
         }
     }

@@ -18,6 +18,11 @@ namespace AlexaSandbox
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((hostingContext, config) =>
+            {
+                config.AddJsonFile("etc/secrets/appsettings.secrets.json",
+                                    optional: false, reloadOnChange: false);
+            })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
